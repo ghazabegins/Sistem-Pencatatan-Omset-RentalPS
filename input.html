@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input Setoran - UNIX</title>
+    
+    <script>
+        if (sessionStorage.getItem('isLoggedIn') !== 'true') { window.location.href = "index.html"; }
+    </script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        body { background-color: #f4f6f8; font-family: 'Poppins', sans-serif; padding-bottom: 60px; }
+        .logout-btn { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); color: #2c3e50; border: none; padding: 8px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; cursor: pointer; z-index: 99; }
+        .app-header { text-align: center; padding: 30px 20px 20px; background: white; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; position: relative; }
+        .app-logo { width: 70px; height: 70px; object-fit: cover; border-radius: 50%; margin-bottom: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .app-title { font-weight: 800; color: #2c3e50; margin: 0; font-size: 1.4rem; text-transform: uppercase; }
+        .app-subtitle { color: #8898aa; font-size: 0.85rem; margin-top: 5px; }
+        .user-badge { background: #e3f2fd; color: #0d6efd; padding: 5px 12px; border-radius: 15px; font-weight: bold; font-size: 0.8rem; display: inline-block; margin-bottom: 10px; }
+        
+        .card-custom { border: none; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); margin-bottom: 20px; overflow: hidden; background: white; }
+        .header-ps { background: #e3f2fd; color: #0d6efd; padding: 12px 20px; }
+        .header-fnb { background: #e8f5e9; color: #198754; padding: 12px 20px; }
+        .cat-title { font-weight: 800; font-size: 1rem; display: flex; align-items: center; gap: 8px; }
+        .card-body { padding: 20px; }
+        .form-label { font-size: 0.75rem; color: #8898aa; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; }
+        .form-control { border: 2px solid #f0f2f5; padding: 12px; font-weight: 600; border-radius: 12px; font-size: 1rem; transition: all 0.3s;}
+        .form-control:focus { border-color: #b0c4de; box-shadow: none; }
+        .input-total { background-color: #fff; border-width: 2px; font-weight: 800; font-size: 1.2rem; color: #333; text-align: right; }
+        .border-ps { border-color: #90caf9; }
+        .border-fnb { border-color: #a5d6a7; }
+        .btn-submit { width: 100%; padding: 16px; font-weight: 800; border-radius: 15px; font-size: 1.1rem; background: #2c3e50; border: none; color: #fff; box-shadow: 0 10px 20px rgba(44, 62, 80, 0.2); }
+        
+        #success-view { display: none; text-align: center; margin-top: 10px; }
+        .receipt-card { background: white; border-radius: 20px; padding: 30px 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); position: relative; margin-bottom: 20px; }
+        .success-icon { width: 70px; height: 70px; background: #d1e7dd; border-radius: 50%; color: #198754; display: flex; align-items: center; justify-content: center; font-size: 30px; margin: 0 auto 15px; }
+        .receipt-title { font-weight: 800; font-size: 1.5rem; color: #198754; margin-bottom: 5px; }
+        .receipt-subtitle { color: #888; font-size: 0.9rem; margin-bottom: 25px; border-bottom: 2px dashed #eee; padding-bottom: 15px; }
+        .receipt-row { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 8px; align-items: center; }
+        .receipt-label { color: #666; font-weight: 500; }
+        .receipt-value { color: #333; font-weight: 700; }
+        .receipt-divider { border-bottom: 1px solid #eee; margin: 10px 0; }
+        .cat-badge { font-size: 0.7rem; padding: 3px 8px; border-radius: 5px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
+        .badge-ps { background: #e3f2fd; color: #0d6efd; }
+        .badge-fnb { background: #e8f5e9; color: #198754; }
+    </style>
+</head>
+<body>
+
+<div class="app-header">
+    <button onclick="logout()" class="logout-btn">🔒 Keluar</button>
+    <button onclick="bukaRekapOwner()" class="btn btn-sm btn-outline-primary position-absolute top-0 start-0 m-3 fw-bold rounded-pill">📊 Data</button>
+
+    <img src="https://ghazabegins.cyou/unix/inputomset/logo.png" alt="Logo" class="app-logo">
+    <h1 class="app-title">UNIX PLAYSTATION</h1>
+    
+    <div class="user-badge">
+        👤 Halo, <span id="display-username">...</span>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div id="form-view">
+                <form id="omsetForm">
+                    <div class="mb-4 px-2">
+                        <label class="form-label ms-1">Tanggal Transaksi</label>
+                        <input type="date" class="form-control fw-bold text-center" id="tanggal" required>
+                    </div>
+                    <div class="card-custom">
+                        <div class="header-ps"><div class="cat-title">🎮 RENTAL PS</div></div>
+                        <div class="card-body">
+                            <div class="mb-3"><label class="form-label text-primary">Total Omset PS</label><input type="number" class="form-control input-total border-ps" id="ps_total" placeholder="0"></div>
+                            <div class="row g-2">
+                                <div class="col-6"><label class="form-label">Tunai</label><input type="number" class="form-control ps-calc" id="ps_cash" placeholder="0"></div>
+                                <div class="col-6"><label class="form-label">QRIS</label><input type="number" class="form-control ps-calc" id="ps_qris" placeholder="0"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-custom">
+                        <div class="header-fnb"><div class="cat-title">🍔 FNB / MAKANAN</div></div>
+                        <div class="card-body">
+                            <div class="mb-3"><label class="form-label text-success">Total Omset FNB</label><input type="number" class="form-control input-total border-fnb" id="fnb_total" placeholder="0"></div>
+                            <div class="row g-2">
+                                <div class="col-6"><label class="form-label">Tunai</label><input type="number" class="form-control fnb-calc" id="fnb_cash" placeholder="0"></div>
+                                <div class="col-6"><label class="form-label">QRIS</label><input type="number" class="form-control fnb-calc" id="fnb_qris" placeholder="0"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit">KIRIM LAPORAN 🚀</button>
+                </form>
+            </div>
+
+            <div id="success-view">
+                <div class="receipt-card">
+                    <div class="success-icon">✔</div>
+                    <div class="receipt-title">BERHASIL!</div>
+                    <div class="receipt-subtitle">Data disimpan oleh: <b id="res-user">-</b></div>
+                    <div class="receipt-row"><span class="receipt-label">Tanggal</span><span class="receipt-value" id="res-tanggal">-</span></div>
+                    <div class="receipt-divider"></div>
+                    <div class="d-flex align-items-center mb-2"><span class="cat-badge badge-ps">RENTAL PS</span></div>
+                    <div class="receipt-row"><span class="receipt-label">Total Omset</span><span class="receipt-value text-primary" id="res-ps-total">Rp 0</span></div>
+                    <div class="receipt-row small text-muted"><span class="receipt-label ms-2">└ Tunai</span><span class="receipt-value" style="font-weight: 500;" id="res-ps-cash">Rp 0</span></div>
+                    <div class="receipt-row small text-muted"><span class="receipt-label ms-2">└ QRIS</span><span class="receipt-value" style="font-weight: 500;" id="res-ps-qris">Rp 0</span></div>
+                    <div class="receipt-divider"></div>
+                    <div class="d-flex align-items-center mb-2"><span class="cat-badge badge-fnb">FNB / MAKANAN</span></div>
+                    <div class="receipt-row"><span class="receipt-label">Total Omset</span><span class="receipt-value text-success" id="res-fnb-total">Rp 0</span></div>
+                    <div class="receipt-row small text-muted"><span class="receipt-label ms-2">└ Tunai</span><span class="receipt-value" style="font-weight: 500;" id="res-fnb-cash">Rp 0</span></div>
+                    <div class="receipt-row small text-muted"><span class="receipt-label ms-2">└ QRIS</span><span class="receipt-value" style="font-weight: 500;" id="res-fnb-qris">Rp 0</span></div>
+                </div>
+                <button onclick="resetInput()" class="btn btn-dark w-100 py-3 fw-bold rounded-4 shadow">📝 INPUT DATA BARU</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- ⚠️ PASTE URL WEB APP DISINI ---
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbyr4HaHcMknb_g9XmR-vZHbNCWSaIl1VokxtwVmmg1RuBeFWW1xQIM7_kM-sWXczCe1/exec'; 
+    // ---------------------------------
+    const PASSWORD_REKAP = "ADMIN123"; 
+
+    // === AMBIL NAMA USER DARI SESSION ===
+    const currentUser = sessionStorage.getItem('activeUser') || "Anonim";
+    document.getElementById('display-username').innerText = currentUser.toUpperCase();
+    // ====================================
+
+    document.getElementById('tanggal').valueAsDate = new Date();
+
+    function logout() { sessionStorage.removeItem('isLoggedIn'); sessionStorage.removeItem('activeUser'); window.location.href = "index.html"; }
+
+    function bukaRekapOwner() {
+        if(sessionStorage.getItem('isOwnerLoggedIn') === 'true') { window.location.href = 'rekap.html'; return; }
+        Swal.fire({
+            title: 'Khusus Owner', input: 'password', inputLabel: 'Masukkan Password Admin', showCancelButton: true, confirmButtonColor: '#2c3e50', confirmButtonText: 'Buka Data'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                if (result.value === PASSWORD_REKAP) { sessionStorage.setItem('isOwnerLoggedIn', 'true'); window.location.href = 'rekap.html'; } 
+                else { Swal.fire('Salah!', 'Password salah.', 'error'); }
+            }
+        });
+    }
+
+    function autoHitungPS() {
+        let cash = Number(document.getElementById('ps_cash').value) || 0;
+        let qris = Number(document.getElementById('ps_qris').value) || 0;
+        document.getElementById('ps_total').value = cash + qris;
+    }
+    function autoHitungFNB() {
+        let cash = Number(document.getElementById('fnb_cash').value) || 0;
+        let qris = Number(document.getElementById('fnb_qris').value) || 0;
+        document.getElementById('fnb_total').value = cash + qris;
+    }
+    document.querySelectorAll('.ps-calc').forEach(item => item.addEventListener('input', autoHitungPS));
+    document.querySelectorAll('.fnb-calc').forEach(item => item.addEventListener('input', autoHitungFNB));
+
+    const form = document.forms['omsetForm'];
+    const btn = document.querySelector('.btn-submit');
+    const formView = document.getElementById('form-view');
+    const successView = document.getElementById('success-view');
+    const fmt = (val) => 'Rp ' + Number(val).toLocaleString('id-ID');
+
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        const valDate = document.getElementById('tanggal').value;
+        const valPsTotal = document.getElementById('ps_total').value;
+        const valPsCash = document.getElementById('ps_cash').value || 0;
+        const valPsQris = document.getElementById('ps_qris').value || 0;
+        const valFnbTotal = document.getElementById('fnb_total').value;
+        const valFnbCash = document.getElementById('fnb_cash').value || 0;
+        const valFnbQris = document.getElementById('fnb_qris').value || 0;
+
+        Swal.fire({
+            title: 'Cek Data',
+            html: `<p>Total PS: <b>${fmt(valPsTotal)}</b><br>Total FNB: <b>${fmt(valFnbTotal)}</b></p>`,
+            icon: 'question', showCancelButton: true, confirmButtonColor: '#2c3e50', confirmButtonText: 'Kirim', cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                btn.disabled = true; btn.innerHTML = 'Mengirim... ⏳';
+                const data = {
+                    action: 'insert',
+                    username: currentUser, // <--- KIRIM NAMA USER
+                    tanggal: valDate,
+                    ps_total: valPsTotal, ps_cash: valPsCash, ps_qris: valPsQris,
+                    fnb_total: valFnbTotal, fnb_cash: valFnbCash, fnb_qris: valFnbQris
+                };
+                fetch(scriptURL, { method: 'POST', body: JSON.stringify(data)})
+                .then(response => {
+                    document.getElementById('res-user').innerText = currentUser.toUpperCase();
+                    document.getElementById('res-tanggal').innerText = valDate;
+                    document.getElementById('res-ps-total').innerText = fmt(valPsTotal);
+                    document.getElementById('res-ps-cash').innerText = fmt(valPsCash);
+                    document.getElementById('res-ps-qris').innerText = fmt(valPsQris);
+                    document.getElementById('res-fnb-total').innerText = fmt(valFnbTotal);
+                    document.getElementById('res-fnb-cash').innerText = fmt(valFnbCash);
+                    document.getElementById('res-fnb-qris').innerText = fmt(valFnbQris);
+                    formView.style.display = 'none';
+                    successView.style.display = 'block';
+                    window.scrollTo(0,0);
+                    btn.disabled = false; btn.innerHTML = 'KIRIM LAPORAN 🚀';
+                })
+                .catch(error => { Swal.fire('Gagal', 'Cek koneksi internet!', 'error'); btn.disabled = false; btn.innerHTML = 'KIRIM LAPORAN 🚀'; });
+            }
+        });
+    });
+
+    function resetInput() {
+        form.reset(); document.getElementById('tanggal').valueAsDate = new Date();
+        successView.style.display = 'none'; formView.style.display = 'block';
+    }
+</script>
+
+</body>
+</html>

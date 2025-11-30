@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - UNIXPS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #f4f6f8; font-family: 'Poppins', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        
+        .login-card { 
+            background: white; padding: 40px 30px; border-radius: 25px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; 
+        }
+        
+        .app-logo { 
+            width: 80px; height: 80px; object-fit: cover; border-radius: 50%; 
+            margin-bottom: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+        }
+        
+        .btn-login { 
+            width: 100%; padding: 15px; font-weight: 800; border-radius: 12px; 
+            background: #2c3e50; border: none; color: white; margin-top: 20px; 
+            transition: transform 0.2s;
+        }
+        .btn-login:active { transform: scale(0.98); }
+
+        .form-control { 
+            padding: 12px; border-radius: 10px; background: #f8f9fa; 
+            border: 2px solid #eee; font-size: 1rem; margin-bottom: 15px;
+        }
+        .form-control:focus { border-color: #2c3e50; box-shadow: none; background: #fff; }
+        
+        .error-msg { 
+            color: #dc3545; font-size: 0.85rem; margin-top: 15px; 
+            display: none; font-weight: 600; background: #fff0f0; padding: 10px; border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="d-flex justify-content-center">
+        <div class="login-card">
+            <img src="https://ghazabegins.cyou/unix/inputomset/logo.png" alt="Logo" class="app-logo">
+            <h4 class="fw-bold mb-1">UNIX PLAYSTATION</h4>
+            <p class="text-muted small mb-4">Silakan login akun anda</p>
+            
+            <form id="loginForm">
+                
+                <div class="text-start mb-1"><label class="small fw-bold text-muted ms-1">Username</label></div>
+                <input type="text" id="username" class="form-control" placeholder="Username" required>
+
+                <div class="text-start mb-1"><label class="small fw-bold text-muted ms-1">Password</label></div>
+                <input type="password" id="password" class="form-control" placeholder="••••••" required>
+
+                <div id="errorMsg" class="error-msg">Username atau Password Salah! ❌</div>
+                
+                <button type="submit" class="btn-login">MASUK APLIKASI</button>
+                <p class="text-muted small mb-4"> by Ghaza</p>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // === KONFIGURASI 3 USER DISINI ===
+    const USERS = [
+        // User 1: OWNER (Bisa segalanya)
+        { id: 'admin', pass: '123', role: 'owner' },
+        
+        // User 2: STAFF PAGI
+        { id: 'staff1', pass: '123', role: 'staff' },
+        
+        // User 3: STAFF MALAM
+        { id: 'staff2', pass: '123', role: 'staff' }
+    ];
+    // =================================
+
+    const loginForm = document.getElementById('loginForm');
+    const errorMsg = document.getElementById('errorMsg');
+
+    // Cek Auto Login
+    if (sessionStorage.getItem('isLoggedIn') === 'true') {
+        window.location.href = "input.html";
+    }
+
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const inputUser = document.getElementById('username').value.toLowerCase(); // Biar huruf besar/kecil dianggap sama
+        const inputPass = document.getElementById('password').value;
+
+        // Cari User di Database Array
+        const foundUser = USERS.find(u => u.id === inputUser && u.pass === inputPass);
+
+        if (foundUser) {
+            // LOGIN BERHASIL
+            sessionStorage.setItem('isLoggedIn', 'true');
+            sessionStorage.setItem('activeUser', foundUser.id); // Simpan nama user yg login
+
+            // LOGIKA SPESIAL UNTUK OWNER
+            if (foundUser.role === 'owner') {
+                // Jika Owner login dari sini, otomatis kasih akses ke Rekap juga
+                sessionStorage.setItem('isOwnerLoggedIn', 'true');
+            } else {
+                // Jika Staff, pastikan akses rekap tertutup
+                sessionStorage.removeItem('isOwnerLoggedIn');
+            }
+            
+            window.location.href = "input.html";
+        } else {
+            // LOGIN GAGAL
+            errorMsg.style.display = 'block';
+            // Animasi Goyang
+            document.querySelector('.login-card').animate([
+                { transform: 'translateX(0)' }, { transform: 'translateX(-10px)' }, 
+                { transform: 'translateX(10px)' }, { transform: 'translateX(0)' }
+            ], { duration: 300 });
+        }
+    });
+</script>
+
+</body>
+</html>
