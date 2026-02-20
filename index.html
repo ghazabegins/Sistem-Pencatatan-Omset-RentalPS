@@ -1,126 +1,148 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - UNIXPS</title>
+    <title>Login - UNIX PLAYSTATION</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/main.css">
     <style>
-        body { background-color: #f4f6f8; font-family: 'Poppins', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        
-        .login-card { 
-            background: white; padding: 40px 30px; border-radius: 25px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; 
+        body {
+            background: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        
-        .app-logo { 
-            width: 80px; height: 80px; object-fit: cover; border-radius: 50%; 
-            margin-bottom: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
-        }
-        
-        .btn-login { 
-            width: 100%; padding: 15px; font-weight: 800; border-radius: 12px; 
-            background: #2c3e50; border: none; color: white; margin-top: 20px; 
-            transition: transform 0.2s;
-        }
-        .btn-login:active { transform: scale(0.98); }
 
-        .form-control { 
-            padding: 12px; border-radius: 10px; background: #f8f9fa; 
-            border: 2px solid #eee; font-size: 1rem; margin-bottom: 15px;
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
         }
-        .form-control:focus { border-color: #2c3e50; box-shadow: none; background: #fff; }
-        
-        .error-msg { 
-            color: #dc3545; font-size: 0.85rem; margin-top: 15px; 
-            display: none; font-weight: 600; background: #fff0f0; padding: 10px; border-radius: 8px;
+
+        .login-card {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 420px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .app-logo {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            border: 4px solid white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
+
 <body>
 
-<div class="container">
-    <div class="d-flex justify-content-center">
-        <div class="login-card">
-            <img src="https://ghazabegins.cyou/unix/inputomset/logo.png" alt="Logo" class="app-logo">
-            <h4 class="fw-bold mb-1">UNIX PLAYSTATION</h4>
-            <p class="text-muted small mb-4">Silakan login akun anda</p>
-            
+    <div class="overlay"></div>
+
+    <div class="container d-flex justify-content-center">
+        <div class="login-card glass-card animate-fade-in text-center">
+            <img src="logo.png" alt="Logo" class="app-logo">
+            <h3 class="fw-bold mb-1 text-dark">UNIX PLAYSTATION</h3>
+            <p class="text-muted mb-4 small">Sistem Manajemen & Input Omset</p>
+
             <form id="loginForm">
-                
-                <div class="text-start mb-1"><label class="small fw-bold text-muted ms-1">Username</label></div>
-                <input type="text" id="username" class="form-control" placeholder="Username" required>
+                <div class="form-floating mb-3 text-start">
+                    <input type="text" class="form-control" id="username" placeholder="Username" required>
+                    <label for="username">Username</label>
+                </div>
+                <div class="form-floating mb-3 text-start">
+                    <input type="password" class="form-control" id="password" placeholder="Password" required>
+                    <label for="password">Password</label>
+                </div>
 
-                <div class="text-start mb-1"><label class="small fw-bold text-muted ms-1">Password</label></div>
-                <input type="password" id="password" class="form-control" placeholder="••••••" required>
+                <div id="errorMsg" class="alert alert-danger p-2 small fw-bold" style="display: none;"></div>
 
-                <div id="errorMsg" class="error-msg">Username atau Password Salah! ❌</div>
-                
-                <button type="submit" class="btn-login">MASUK APLIKASI</button>
-                
+                <button type="submit" class="btn btn-primary-gradient w-100 py-3 rounded-4 mt-2">MASUK APLIKASI
+                    🚀</button>
             </form>
+
+            <div class="mt-4 text-muted small">
+                &copy; 2026 Unix Playstation
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-    // === KONFIGURASI 3 USER DISINI ===
-    const USERS = [
-        // User 1: OWNER (Bisa segalanya)
-        { id: 'ghaza', pass: 'unix', role: 'owner' },
-        
-        // User 2: STAFF PAGI
-        { id: 'pram', pass: 'unix', role: 'staff' },
-        
-        // User 3: STAFF MALAM
-        { id: 'rifqy', pass: 'unix', role: 'staff' }
-    ];
-    // =================================
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const errorMsg = document.getElementById('errorMsg');
 
-    const loginForm = document.getElementById('loginForm');
-    const errorMsg = document.getElementById('errorMsg');
-
-    // Cek Auto Login
-    if (sessionStorage.getItem('isLoggedIn') === 'true') {
-        window.location.href = "input.html";
-    }
-
-    loginForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        const inputUser = document.getElementById('username').value.toLowerCase(); // Biar huruf besar/kecil dianggap sama
-        const inputPass = document.getElementById('password').value;
-
-        // Cari User di Database Array
-        const foundUser = USERS.find(u => u.id === inputUser && u.pass === inputPass);
-
-        if (foundUser) {
-            // LOGIN BERHASIL
-            sessionStorage.setItem('isLoggedIn', 'true');
-            sessionStorage.setItem('activeUser', foundUser.id); // Simpan nama user yg login
-
-            // LOGIKA SPESIAL UNTUK OWNER
-            if (foundUser.role === 'owner') {
-                // Jika Owner login dari sini, otomatis kasih akses ke Rekap juga
-                sessionStorage.setItem('isOwnerLoggedIn', 'true');
-            } else {
-                // Jika Staff, pastikan akses rekap tertutup
-                sessionStorage.removeItem('isOwnerLoggedIn');
-            }
-            
+        // Auto Login Check
+        if (sessionStorage.getItem('isLoggedIn') === 'true') {
             window.location.href = "input.html";
-        } else {
-            // LOGIN GAGAL
-            errorMsg.style.display = 'block';
-            // Animasi Goyang
-            document.querySelector('.login-card').animate([
-                { transform: 'translateX(0)' }, { transform: 'translateX(-10px)' }, 
-                { transform: 'translateX(10px)' }, { transform: 'translateX(0)' }
-            ], { duration: 300 });
         }
-    });
-</script>
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value.toLowerCase();
+            const password = document.getElementById('password').value;
+            const btn = document.querySelector('button[type="submit"]');
+
+            btn.disabled = true;
+            btn.innerHTML = 'Memeriksa... ⏳';
+
+            try {
+                const res = await fetch('api/auth.php?action=login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+
+                if (data.status === 'success') {
+                    sessionStorage.setItem('isLoggedIn', 'true');
+                    sessionStorage.setItem('activeUser', data.user.username);
+                    sessionStorage.setItem('userRole', data.user.role);
+
+                    window.location.href = "input.html";
+                } else {
+                    errorMsg.innerText = data.message;
+                    errorMsg.style.display = 'block';
+                    loginForm.classList.add('shake');
+                    setTimeout(() => loginForm.classList.remove('shake'), 500);
+                }
+            } catch (err) {
+                errorMsg.innerText = "Gagal terhubung ke server.";
+                errorMsg.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'MASUK APLIKASI 🚀';
+            }
+        });
+
+        // Add minimal shake animation via JS
+        const style = document.createElement('style');
+        style.innerHTML = `
+        .shake { animation: shake 0.5s; }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            50% { transform: translateX(10px); }
+            75% { transform: translateX(-10px); }
+            100% { transform: translateX(0); }
+        }
+    `;
+        document.head.appendChild(style);
+    </script>
 
 </body>
+
 </html>

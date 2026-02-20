@@ -1,211 +1,606 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rekap Laporan - Admin</title>
-    <script> if (sessionStorage.getItem('isOwnerLoggedIn') !== 'true') { window.location.href = "input.html"; } </script>
+    <title>Rekap Data - Owner</title>
+    <script>
+        if (sessionStorage.getItem('userRole') !== 'owner') { window.location.href = "input.html"; }
+    </script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/main.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
-        /* CSS SAMA, HANYA TAMBAH STYLE BADGE USER */
-        body { background-color: #f4f6f8; font-family: 'Poppins', sans-serif; padding-bottom: 80px; }
-        .app-header { background: white; padding: 20px; text-align: center; border-radius: 0 0 30px 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; position: relative; }
-        .page-title { font-weight: 800; color: #2c3e50; margin: 0; font-size: 1.2rem; text-transform: uppercase; }
-        .page-subtitle { font-size: 0.8rem; color: #888; }
-        .btn-logout { position: absolute; top: 20px; right: 20px; font-size: 0.75rem; font-weight: bold; color: #dc3545; background: #fff0f0; border: none; padding: 5px 12px; border-radius: 15px; }
-        .table-card { background: white; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); overflow: hidden; margin-bottom: 20px; border: 1px solid #eee; }
-        .table-responsive { max-height: 70vh; overflow-y: auto; }
-        .table thead th { position: sticky; top: 0; z-index: 20; border: none; font-size: 0.7rem; text-transform: uppercase; padding: 12px 5px; white-space: nowrap; text-align: center !important; vertical-align: middle; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .table tbody td { vertical-align: middle; font-size: 0.85rem; padding: 10px 5px; white-space: nowrap; border-bottom: 1px solid #f0f0f0; text-align: center !important; }
-        .table tfoot th { position: sticky; bottom: 0; z-index: 20; background: #2c3e50; color: #fff; font-size: 0.75rem; padding: 15px 5px; text-align: center !important; border-top: 2px solid #ddd; }
-        .ft-total-ps { color: #6ea8fe; font-weight: 800; font-size: 0.85rem; }
-        .ft-total-fnb { color: #75b798; font-weight: 800; font-size: 0.85rem; }
-        .bg-ps-light { background-color: #f2f8ff !important; }
-        .val-ps-total { color: #0d6efd; font-weight: 800; }
-        .bg-fnb-light { background-color: #f2fff6 !important; }
-        .val-fnb-total { color: #198754; font-weight: 800; }
-        .col-date { font-weight: 600; color: #444; }
-        .btn-action { border: none; width: 32px; height: 32px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; margin: 0 2px; transition: transform 0.2s;}
-        .btn-action:active { transform: scale(0.9); }
-        .btn-edit { background: #fff3cd; color: #856404; }
-        .btn-del { background: #f8d7da; color: #721c24; }
-        #loading-state { padding: 50px; text-align: center; color: #888; }
-        .fab-back { position: fixed; bottom: 25px; right: 25px; width: 55px; height: 55px; background: #2c3e50; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 10px 20px rgba(44,62,80,0.4); text-decoration: none; z-index: 999; }
-        
-        .user-pill { background: #e9ecef; color: #495057; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
-        .swal2-input-group { margin-bottom: 10px; text-align: left; }
-        .swal2-label { font-size: 0.8rem; color: #666; font-weight: 600; display: block; margin-bottom: 3px; }
-        .swal2-input-custom { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; box-sizing: border-box; }
-        .group-header { font-weight: 800; margin: 15px 0 5px; font-size: 0.9rem; text-transform: uppercase; border-bottom: 2px solid #eee; padding-bottom: 5px; }
+        .app-header {
+            background: white;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 20px;
+        }
+
+        .header-nav a {
+            text-decoration: none;
+            color: #888;
+            font-weight: 600;
+            margin: 0 10px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .header-nav a:hover,
+        .header-nav a.active {
+            background: #e3f2fd;
+            color: #0d6efd;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .data-table thead th {
+            background: #f8f9fa;
+            color: #444;
+            padding: 15px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            border-bottom: 2px solid #eee;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .data-table tbody td {
+            background: white;
+            padding: 12px 15px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+
+        .data-table tbody tr:hover td {
+            background: #fafafa;
+        }
+
+        .badge-pill {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .bg-gradient-ps {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            color: #1565c0;
+        }
+
+        .bg-gradient-fnb {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            color: #2e7d32;
+        }
+
+        .btn-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            margin: 0 2px;
+        }
+
+        .btn-edit {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .btn-del {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Grand Total Card */
+        .total-summary-card {
+            background: linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(44, 62, 80, 0.2);
+        }
+
+        /* Mobile Responsive Handling */
+        .mobile-card {
+            display: none;
+        }
+
+        .desktop-table {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .desktop-table {
+                display: none;
+            }
+
+            .mobile-card {
+                display: block;
+                background: white;
+                border-radius: 15px;
+                margin-bottom: 15px;
+                padding: 15px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+                border: 1px solid #f1f1f1;
+            }
+
+            .m-row {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 8px;
+                font-size: 0.9rem;
+            }
+
+            .m-label {
+                color: #888;
+                font-weight: 500;
+                font-size: 0.8rem;
+            }
+
+            .m-val {
+                font-weight: 700;
+                color: #333;
+            }
+
+            .m-divider {
+                border-bottom: 1px dashed #eee;
+                margin: 10px 0;
+            }
+
+            .m-actions {
+                text-align: right;
+                margin-top: 10px;
+            }
+
+            .header-nav {
+                display: none !important;
+            }
+
+            /* Hide text nav on mobile */
+        }
     </style>
 </head>
+
 <body>
 
-<div class="app-header">
-    <button onclick="logout()" class="btn-logout">🔒 Logout</button>
-    <h1 class="page-title">Data Laporan</h1>
-    <p class="page-subtitle mb-0">Admin Access</p>
-</div>
+    <div class="app-header d-flex justify-content-between align-items-center px-3 shadow-sm sticky-top">
+        <div class="d-flex align-items-center gap-2">
+            <a href="input.html" class="btn btn-light rounded-circle shadow-sm" style="width: 40px; height: 40px;">⬅</a>
+            <h5 class="fw-bold m-0 text-dark">DATA LAPORAN</h5>
+        </div>
 
-<div class="container-fluid px-2">
-    <div class="table-card">
-        <div id="loading-state"><div class="spinner-border text-primary mb-3" role="status"></div><p class="small fw-bold">Mengambil data...</p></div>
-        <div class="table-responsive" id="data-container" style="display: none;">
-            <table class="table table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th style="background: #34495e; color: white;">AKSI</th>
-                        <th style="min-width: 80px; background: #34495e; color: white;">TGL</th>
-                        <th style="background: #34495e; color: white;">USER</th> <th class="bg-primary text-white" colspan="3">RENTAL PS</th>
-                        <th class="bg-success text-white" colspan="3">FNB</th>
-                    </tr>
-                    <tr style="font-size: 0.65rem;">
-                        <th style="background: #f8f9fa;"></th>
-                        <th style="background: #f8f9fa;"></th>
-                        <th style="background: #f8f9fa;"></th>
-                        <th class="bg-ps-light text-primary">TOTAL</th>
-                        <th class="bg-ps-light text-muted">Cash</th>
-                        <th class="bg-ps-light text-muted">QRIS</th>
-                        <th class="bg-fnb-light text-success">TOTAL</th>
-                        <th class="bg-fnb-light text-muted">Cash</th>
-                        <th class="bg-fnb-light text-muted">QRIS</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody"></tbody>
-                <tfoot>
-                    <tr>
-                        <th style="background: #212529;" colspan="3">TOTAL</th>
-                        <th style="background: #212529;" class="ft-total-ps" id="sum-ps-total">0</th>
-                        <th style="background: #212529;" id="sum-ps-cash">0</th>
-                        <th style="background: #212529;" id="sum-ps-qris">0</th>
-                        <th style="background: #212529;" class="ft-total-fnb" id="sum-fnb-total">0</th>
-                        <th style="background: #212529;" id="sum-fnb-cash">0</th>
-                        <th style="background: #212529;" id="sum-fnb-qris">0</th>
-                    </tr>
-                </tfoot>
-            </table>
+        <div class="header-nav d-none d-md-block">
+            <a href="input.html">Input</a>
+            <a href="#" class="active">Laporan</a>
+            <a href="manage_users.html">User Management</a>
+        </div>
+
+        <div>
+            <span class="badge bg-primary rounded-pill">OWNER</span>
         </div>
     </div>
-</div>
 
-<a href="input.html" class="fab-back" title="Kembali Input">➕</a>
+    <div class="container-fluid px-3 px-md-4">
 
-<script>
-    // --- ⚠️ PASTE URL WEB APP DISINI ---
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbyr4HaHcMknb_g9XmR-vZHbNCWSaIl1VokxtwVmmg1RuBeFWW1xQIM7_kM-sWXczCe1/exec'; 
-    // ---------------------------------
+        <!-- Header Controls -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h6 class="fw-bold m-0 text-muted">Data Laporan</h6>
+                <a href="rekaparsip.html" class="btn btn-sm btn-outline-primary rounded-pill mt-1">📂 Lihat Arsip</a>
+            </div>
 
-    function logout() { sessionStorage.removeItem('isOwnerLoggedIn'); window.location.href = "index.html"; }
-    const formatTanggalIndo = (d) => { if(!d) return '-'; const date = new Date(d); if(isNaN(date.getTime())) return '-'; return date.toLocaleDateString('id-ID', {day:'2-digit', month:'2-digit', year:'2-digit'}); };
-    const fmt = (v) => { let n = Number(v); return (v==="" || v===null || isNaN(n) || n===0) ? '-' : n.toLocaleString('id-ID'); };
+            <!-- Tutupan Button (Owner Only) -->
+            <button id="btnTutupan" class="btn btn-danger btn-sm shadow-sm rounded-pill px-3 fw-bold"
+                onclick="tutupan()" style="display:none;">
+                🔒 TUTUPAN BULANAN
+            </button>
+        </div>
 
-    function loadData() {
-        document.getElementById('loading-state').style.display = 'block';
-        document.getElementById('data-container').style.display = 'none';
+        <!-- Grand Total Stats -->
+        <div class="total-summary-card">
+            <div class="row text-center">
+                <div class="col-4 border-end border-light">
+                    <small class="text-white-50 fw-bold">TOTAL PS</small>
+                    <h5 class="fw-bold mb-0 mt-1" id="gt-ps">Rp 0</h5>
+                </div>
+                <div class="col-4 border-end border-light">
+                    <small class="text-white-50 fw-bold">TOTAL FNB</small>
+                    <h5 class="fw-bold mb-0 mt-1" id="gt-fnb">Rp 0</h5>
+                </div>
+                <div class="col-4">
+                    <small class="text-warning fw-bold">GRAND TOTAL</small>
+                    <h4 class="fw-bold mb-0 mt-1 text-warning" id="gt-all">Rp 0</h4>
+                </div>
+            </div>
+        </div>
 
-        fetch(scriptURL)
-            .then(res => res.json())
-            .then(res => {
-                if (res.status === 'success') {
-                    const rawData = res.data; 
-                    
-                    const cleanData = rawData.filter(item => item.values[0] && new Date(item.values[0]).toString() !== 'Invalid Date');
-                    cleanData.sort((a, b) => new Date(a.values[0]) - new Date(b.values[0]));
+        <div id="loading-state" class="text-center p-5 text-muted">
+            <div class="spinner-border text-primary mb-3" role="status"></div>
+            <p class="small fw-bold">Mengambil data dari server...</p>
+        </div>
 
-                    let html = '';
-                    let total = { ps_all:0, ps_cash:0, ps_qris:0, fnb_all:0, fnb_cash:0, fnb_qris:0 };
+        <div id="data-container" style="display: none;">
 
-                    cleanData.forEach(item => {
-                        const row = item.values; 
-                        const idx = item.excel_row_index; 
-                        
-                        total.ps_all += Number(row[1])||0; total.ps_cash += Number(row[2])||0; total.ps_qris += Number(row[3])||0;
-                        total.fnb_all += Number(row[4])||0; total.fnb_cash += Number(row[5])||0; total.fnb_qris += Number(row[6])||0;
-
-                        const rawDate = new Date(row[0]);
-                        const dateIso = rawDate.getFullYear() + '-' + String(rawDate.getMonth() + 1).padStart(2, '0') + '-' + String(rawDate.getDate()).padStart(2, '0');
-                        
-                        // row[7] adalah Kolom H (User)
-                        const userBadge = row[7] ? `<span class="user-pill">${row[7]}</span>` : '-';
-
-                        const rowJson = JSON.stringify({ idx: idx, date: dateIso, ps_t: row[1], ps_c: row[2], ps_q: row[3], fnb_t: row[4], fnb_c: row[5], fnb_q: row[6] }).replace(/"/g, '&quot;');
-
-                        html += `
+            <!-- DESKTOP TABLE VIEW -->
+            <div class="glass-card p-0 overflow-hidden desktop-table mb-4">
+                <div class="table-responsive" style="max-height: 70vh;">
+                    <table class="data-table text-center table-hover mb-0">
+                        <thead>
                             <tr>
-                                <td>
-                                    <button class="btn-action btn-edit" onclick="openEditModal(${rowJson})">✎</button>
-                                    <button class="btn-action btn-del" onclick="deleteRow(${idx})">🗑</button>
-                                </td>
-                                <td class="col-date">${formatTanggalIndo(row[0])}</td>
-                                <td>${userBadge}</td> <td class="bg-ps-light val-ps-total">${fmt(row[1])}</td>
-                                <td class="bg-ps-light text-muted small">${fmt(row[2])}</td>
-                                <td class="bg-ps-light text-muted small">${fmt(row[3])}</td>
-                                <td class="bg-fnb-light val-fnb-total">${fmt(row[4])}</td>
-                                <td class="bg-fnb-light text-muted small">${fmt(row[5])}</td>
-                                <td class="bg-fnb-light text-muted small">${fmt(row[6])}</td>
+                                <th>AKSI</th>
+                                <th>TANGGAL</th>
+                                <th>USER</th>
+                                <th class="text-primary bg-light border-start">TOTAL PS</th>
+                                <th class="text-muted small">CASH</th>
+                                <th class="text-muted small">QRIS</th>
+                                <th class="text-success bg-light border-start">TOTAL FNB</th>
+                                <th class="text-muted small">CASH</th>
+                                <th class="text-muted small">QRIS</th>
                             </tr>
-                        `;
-                    });
+                        </thead>
+                        <tbody id="tableBodyDesktop"></tbody>
+                    </table>
+                </div>
+            </div>
 
-                    document.getElementById('tableBody').innerHTML = html;
-                    document.getElementById('sum-ps-total').innerText = fmt(total.ps_all);
-                    document.getElementById('sum-ps-cash').innerText = fmt(total.ps_cash);
-                    document.getElementById('sum-ps-qris').innerText = fmt(total.ps_qris);
-                    document.getElementById('sum-fnb-total').innerText = fmt(total.fnb_all);
-                    document.getElementById('sum-fnb-cash').innerText = fmt(total.fnb_cash);
-                    document.getElementById('sum-fnb-qris').innerText = fmt(total.fnb_qris);
+            <!-- MOBILE CARD VIEW -->
+            <div id="cardListMobile" class="pb-5"></div>
 
-                    document.getElementById('loading-state').style.display = 'none';
-                    document.getElementById('data-container').style.display = 'block';
-                } else {
-                    document.getElementById('loading-state').innerHTML = '<p>Belum ada data.</p>';
+        </div>
+
+    </div>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyr4HaHcMknb_g9XmR-vZHbNCWSaIl1VokxtwVmmg1RuBeFWW1xQIM7_kM-sWXczCe1/exec';
+        let globalRawData = [];
+
+        const fmt = (v) => v ? Number(v).toLocaleString('id-ID') : '0';
+        const formatDate = (d) => {
+            if (!d) return '-';
+            try {
+                const date = new Date(d);
+                if (isNaN(date.getTime())) return d;
+                return date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: '2-digit' });
+            } catch (e) { return d; }
+        };
+
+        // Safe date for input value (YYYY-MM-DD)
+        const safeDateValue = (d) => {
+            try {
+                const date = new Date(d);
+                if (isNaN(date.getTime())) return '';
+                return date.toISOString().split('T')[0];
+            } catch (e) { return ''; }
+        };
+
+        function checkOwner() {
+            const userRole = sessionStorage.getItem('userRole');
+            if (userRole === 'owner') {
+                document.getElementById('btnTutupan').style.display = 'block';
+            }
+        }
+
+        function loadData() {
+            const loadingState = document.getElementById('loading-state');
+            const dataContainer = document.getElementById('data-container');
+
+            checkOwner(); // Show tutupan button if owner
+
+            loadingState.style.display = 'block';
+            dataContainer.style.display = 'none';
+
+            fetch(scriptURL)
+                .then(res => res.json())
+                .then(res => {
+                    if (res.status === 'success') {
+                        if (!Array.isArray(res.data)) throw new Error('Format data invalid');
+                        globalRawData = res.data;
+                        renderData(res.data); // Filter and display
+                    } else {
+                        throw new Error(res.message || 'API Error');
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    loadingState.innerHTML = `
+                    <p class="text-danger fw-bold mb-1">Gagal memuat data</p>
+                    <small class="text-muted text-break" style="font-size:0.7rem;">${err.message}</small>
+                    <div class="mt-3"><button onclick="location.reload()" class="btn btn-sm btn-outline-secondary">Coba Lagi</button></div>
+                `;
+                });
+        }
+
+        function renderData(rawData) {
+            const loadingState = document.getElementById('loading-state');
+            const dataContainer = document.getElementById('data-container');
+
+            loadingState.style.display = 'none';
+            dataContainer.style.display = 'block';
+
+            // Filter Data (Basic validation)
+            const cleanData = rawData.filter(item => {
+                if (!item || !item.values || !item.values[0]) return false;
+                const dateVal = item.values[0];
+                if (typeof dateVal === 'string' && dateVal.toLowerCase().includes('tanggal')) return false; // Skip Header
+                return true; // Allow viewing all data for now, since archive is manual
+            });
+
+            // Sort Descending
+            cleanData.sort((a, b) => {
+                try { return new Date(b.values[0]) - new Date(a.values[0]); } catch (e) { return 0; }
+            });
+
+            let totalPS = 0;
+            let totalFNB = 0;
+            let htmlDesktop = '';
+            let htmlMobile = '';
+
+            cleanData.forEach(item => {
+                const row = item.values;
+                const idx = item.excel_row_index;
+
+                totalPS += Number(row[1]) || 0;
+                totalFNB += Number(row[4]) || 0;
+
+                const safeDate = safeDateValue(row[0]);
+                const rowData = encodeURIComponent(JSON.stringify({
+                    idx, date: safeDate,
+                    ps_t: row[1], ps_c: row[2], ps_q: row[3],
+                    fnb_t: row[4], fnb_c: row[5], fnb_q: row[6]
+                }));
+
+                // Generate HTML (Desktop & Mobile)
+                htmlDesktop += `
+                <tr>
+                    <td>
+                        <button class="btn-icon btn-edit" onclick="editRow('${rowData}')">✎</button>
+                        <button class="btn-icon btn-del" onclick="deleteRow(${idx})">🗑</button>
+                    </td>
+                    <td class="fw-bold text-dark">${formatDate(row[0])}</td>
+                    <td><span class="badge bg-light text-dark border">${row[7] || '-'}</span></td>
+                    <td class="fw-bold text-primary border-start">${fmt(row[1])}</td>
+                    <td class="text-muted small">${fmt(row[2])}</td>
+                    <td class="text-muted small">${fmt(row[3])}</td>
+                    <td class="fw-bold text-success border-start">${fmt(row[4])}</td>
+                    <td class="text-muted small">${fmt(row[5])}</td>
+                    <td class="text-muted small">${fmt(row[6])}</td>
+                </tr>`;
+
+                htmlMobile += `
+                <div class="mobile-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="fw-bold text-dark" style="font-size: 1.1rem;">${formatDate(row[0])}</div>
+                        <span class="badge bg-light text-secondary border">${row[7] || '-'}</span>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="p-2 rounded bg-light border-start border-4 border-primary">
+                                <div class="m-label text-primary">RENTAL PS</div>
+                                <div class="m-val text-primary">Rp ${fmt(row[1])}</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 rounded bg-light border-start border-4 border-success">
+                                <div class="m-label text-success">FNB / MAKAN</div>
+                                <div class="m-val text-success">Rp ${fmt(row[4])}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="m-actions border-top pt-2 mt-2">
+                            <button class="btn btn-sm btn-outline-warning py-1 px-3 fw-bold rounded-pill" onclick="editRow('${rowData}')">Edit</button>
+                            <button class="btn btn-sm btn-outline-danger py-1 px-3 fw-bold rounded-pill" onclick="deleteRow(${idx})">Hapus</button>
+                    </div>
+                </div>`;
+            });
+
+            if (cleanData.length === 0) {
+                const noDataMsg = `<tr><td colspan="9" class="p-5 text-muted">Belum ada data.</td></tr>`;
+                htmlDesktop = noDataMsg;
+                htmlMobile = `<div class="text-center p-5 text-muted bg-light rounded-3 mt-3">Belum ada data</div>`;
+            }
+
+            document.getElementById('tableBodyDesktop').innerHTML = htmlDesktop;
+            document.getElementById('cardListMobile').innerHTML = htmlMobile;
+            document.getElementById('gt-ps').innerText = 'Rp ' + fmt(totalPS);
+            document.getElementById('gt-fnb').innerText = 'Rp ' + fmt(totalFNB);
+            document.getElementById('gt-all').innerText = 'Rp ' + fmt(totalPS + totalFNB);
+        }
+
+        async function tutupan() {
+            if (!globalRawData || globalRawData.length === 0) {
+                Swal.fire('Data Kosong', 'Tidak ada data untuk diarsip.', 'info');
+                return;
+            }
+
+            const { value: arsipName } = await Swal.fire({
+                title: 'Tutupan Bulanan',
+                input: 'text',
+                inputLabel: 'Masukkan Nama Arsip / Periode',
+                inputPlaceholder: 'Contoh: Februari 2026',
+                showCancelButton: true,
+                confirmButtonText: 'Simpan & Bersihkan',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#d33',
+                inputValidator: (value) => {
+                    if (!value) return 'Nama arsip tidak boleh kosong!';
                 }
             });
-    }
 
-    window.deleteRow = (rowIndex) => {
-        Swal.fire({ title: 'Hapus data?', text: "Data tidak bisa dikembalikan!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Hapus' }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({title: 'Menghapus...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() }});
-                fetch(scriptURL, { method: 'POST', body: JSON.stringify({ action: 'delete', row_index: rowIndex }) })
-                .then(res => res.json()).then(res => { Swal.fire('Terhapus!', '', 'success'); loadData(); })
-                .catch(err => Swal.fire('Error', 'Gagal menghapus.', 'error'));
-            }
-        });
-    };
+            if (arsipName) {
+                Swal.fire({
+                    title: 'Memproses Tutupan...',
+                    html: 'Menyimpan arsip dan menghapus data lama.<br><b>JANGAN TUTUP HALAMAN INI!</b>',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
 
-    window.openEditModal = (data) => {
-        Swal.fire({
-            title: 'Edit Data',
-            html: `
-                <div class="swal2-input-group"><label class="swal2-label">Tanggal</label><input type="date" id="edit-date" class="swal2-input-custom" value="${data.date}"></div>
-                <div class="group-header text-primary">RENTAL PS</div>
-                <div class="d-flex gap-2"><div style="flex:1"><label class="swal2-label">Total</label><input type="number" id="edit-ps-t" class="swal2-input-custom" value="${data.ps_t}"></div><div style="flex:1"><label class="swal2-label">Cash</label><input type="number" id="edit-ps-c" class="swal2-input-custom" value="${data.ps_c}"></div><div style="flex:1"><label class="swal2-label">QRIS</label><input type="number" id="edit-ps-q" class="swal2-input-custom" value="${data.ps_q}"></div></div>
-                <div class="group-header text-success">FNB / MAKANAN</div>
-                <div class="d-flex gap-2"><div style="flex:1"><label class="swal2-label">Total</label><input type="number" id="edit-fnb-t" class="swal2-input-custom" value="${data.fnb_t}"></div><div style="flex:1"><label class="swal2-label">Cash</label><input type="number" id="edit-fnb-c" class="swal2-input-custom" value="${data.fnb_c}"></div><div style="flex:1"><label class="swal2-label">QRIS</label><input type="number" id="edit-fnb-q" class="swal2-input-custom" value="${data.fnb_q}"></div></div>
-            `,
-            width: '600px', showCancelButton: true, confirmButtonText: 'Simpan', confirmButtonColor: '#2c3e50',
-            preConfirm: () => {
-                return {
-                    action: 'update', row_index: data.idx, tanggal: document.getElementById('edit-date').value,
-                    ps_total: document.getElementById('edit-ps-t').value, ps_cash: document.getElementById('edit-ps-c').value, ps_qris: document.getElementById('edit-ps-q').value,
-                    fnb_total: document.getElementById('edit-fnb-t').value, fnb_cash: document.getElementById('edit-fnb-c').value, fnb_qris: document.getElementById('edit-fnb-q').value,
+                // 1. Save to Archive (Local JSON)
+                try {
+                    const saveRes = await fetch('api/archive.php?action=save', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name: arsipName, data: globalRawData })
+                    });
+                    const saveJson = await saveRes.json();
+
+                    if (saveJson.status !== 'success') throw new Error(saveJson.message);
+
+                    // 2. Delete All Rows from Google Sheet (Reverse Loop to prevent index shift issues)
+                    // Filter only valid rows that have excel_row_index
+                    const validRows = globalRawData.filter(r => r.excel_row_index).sort((a, b) => b.excel_row_index - a.excel_row_index);
+
+                    // Using Promise.all meant parallelism which might hit API limits. 
+                    // Sequential is safer for GAS.
+                    for (const row of validRows) {
+                        await fetch(scriptURL + `?action=delete&row=${row.excel_row_index}`, { method: 'POST', mode: 'no-cors' });
+                        // Small delay to be polite to the server
+                        await new Promise(r => setTimeout(r, 500));
+                    }
+
+                    Swal.fire('Berhasil!', 'Data telah diarsip dan halaman dibersihkan.', 'success')
+                        .then(() => location.reload());
+
+                } catch (err) {
+                    console.error(err);
+                    Swal.fire('Gagal!', 'Terjadi kesalahan: ' + err.message, 'error');
                 }
             }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() }});
-                fetch(scriptURL, { method: 'POST', body: JSON.stringify(result.value) })
-                .then(res => res.json()).then(res => { Swal.fire('Berhasil', '', 'success'); loadData(); })
-                .catch(err => Swal.fire('Error', 'Gagal update.', 'error'));
-            }
-        });
-    };
-    loadData();
-</script>
+        }
 
+        window.deleteRow = (rowIndex) => {
+            Swal.fire({
+                title: 'Hapus data?', text: "Data akan hilang permanen!", icon: 'warning',
+                showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Hapus'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.showLoading();
+                    fetch(scriptURL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'delete', row_index: rowIndex })
+                    }).then(() => {
+                        Swal.fire('Terhapus!', '', 'success');
+                        loadData();
+                    });
+                }
+            });
+        };
+
+        window.editRow = (data_str) => {
+            const data = JSON.parse(decodeURIComponent(data_str));
+
+            Swal.fire({
+                title: 'Edit Transaksi',
+                width: '600px',
+                html: `
+                <style>
+                    .swal-group { text-align: left; margin-bottom: 15px; }
+                    .swal-group label { font-size: 0.8rem; font-weight: bold; color: #555; display: block; margin-bottom: 5px; }
+                    .swal-row { display: flex; gap: 10px; }
+                    .swal-col { flex: 1; }
+                    .swal-input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 0.95rem; }
+                    .swal-input:focus { border-color: #4facfe; outline: none; }
+                    .header-sect { font-weight: 800; font-size: 0.9rem; margin: 15px 0 5px; padding-bottom: 5px; border-bottom: 2px solid #eee; text-transform: uppercase; }
+                </style>
+                
+                <div class="swal-group">
+                    <label>Tanggal Transaksi</label>
+                    <input type="date" id="e_date" class="swal-input" value="${data.date}">
+                </div>
+
+                <div class="header-sect text-primary">Rental PS</div>
+                <div class="swal-row">
+                    <div class="swal-col"><label>CASH</label><input type="number" id="e_ps_c" class="swal-input ps-calc" value="${data.ps_c}"></div>
+                    <div class="swal-col"><label>QRIS</label><input type="number" id="e_ps_q" class="swal-input ps-calc" value="${data.ps_q}"></div>
+                </div>
+                <div class="swal-group mt-2">
+                    <label class="text-primary">TOTAL PS (Auto)</label>
+                    <input type="number" id="e_ps_t" class="swal-input fw-bold" value="${data.ps_t}" readonly style="background:#f0f7ff; border-color:#cce5ff;">
+                </div>
+
+                <div class="header-sect text-success">FNB / Makanan</div>
+                <div class="swal-row">
+                    <div class="swal-col"><label>CASH</label><input type="number" id="e_fnb_c" class="swal-input fnb-calc" value="${data.fnb_c}"></div>
+                    <div class="swal-col"><label>QRIS</label><input type="number" id="e_fnb_q" class="swal-input fnb-calc" value="${data.fnb_q}"></div>
+                </div>
+                <div class="swal-group mt-2">
+                    <label class="text-success">TOTAL FNB (Auto)</label>
+                    <input type="number" id="e_fnb_t" class="swal-input fw-bold" value="${data.fnb_t}" readonly style="background:#f0fff4; border-color:#c3e6cb;">
+                </div>
+            `,
+                showCancelButton: true,
+                confirmButtonText: 'Simpan Perubahan',
+                confirmButtonColor: '#2c3e50',
+                didOpen: () => {
+                    // Auto calc logic inside modal
+                    const calcPS = () => {
+                        const c = Number(document.getElementById('e_ps_c').value) || 0;
+                        const q = Number(document.getElementById('e_ps_q').value) || 0;
+                        document.getElementById('e_ps_t').value = c + q;
+                    };
+                    const calcFNB = () => {
+                        const c = Number(document.getElementById('e_fnb_c').value) || 0;
+                        const q = Number(document.getElementById('e_fnb_q').value) || 0;
+                        document.getElementById('e_fnb_t').value = c + q;
+                    };
+                    document.querySelectorAll('.ps-calc').forEach(el => el.addEventListener('input', calcPS));
+                    document.querySelectorAll('.fnb-calc').forEach(el => el.addEventListener('input', calcFNB));
+                },
+                preConfirm: () => {
+                    return {
+                        action: 'update',
+                        row_index: data.idx,
+                        tanggal: document.getElementById('e_date').value,
+                        ps_total: document.getElementById('e_ps_t').value,
+                        ps_cash: document.getElementById('e_ps_c').value,
+                        ps_qris: document.getElementById('e_ps_q').value,
+                        fnb_total: document.getElementById('e_fnb_t').value,
+                        fnb_cash: document.getElementById('e_fnb_c').value,
+                        fnb_qris: document.getElementById('e_fnb_q').value
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+
+                    fetch(scriptURL, {
+                        method: 'POST',
+                        body: JSON.stringify(result.value)
+                    })
+                        .then(res => res.json())
+                        .then(res => {
+                            if (res.status === 'success') {
+                                Swal.fire('Berhasil!', 'Data telah diperbarui.', 'success');
+                                loadData();
+                            } else {
+                                throw new Error(res.message);
+                            }
+                        })
+                        .catch(err => Swal.fire('Error', 'Gagal update: ' + err, 'error'));
+                }
+            });
+        }
+
+        loadData();
+    </script>
 </body>
 
 </html>
